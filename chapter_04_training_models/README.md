@@ -1,48 +1,48 @@
-# فصل ۴: آموزش مدل‌ها (Training Models) 🚀
+# Chapter 4: Training Models 🚀
 
-این پوشه شامل خلاصه‌نویسی، مفاهیم ریاضی و پیاده‌سازی متدهای آموزش مدل‌های خطی از **فصل ۴ کتاب Hands-On Machine Learning** است.
+This folder contains notes, mathematical foundations, and code implementations of training linear models from **Chapter 4 of Hands-On Machine Learning**.
 
 ---
 
-## ۱. رگرسیون خطی (Linear Regression)
+## 1. Linear Regression
 
-یک مدل خطی پیش‌بینی خود را از طریق مجموع وزن‌دار ویژگی‌های ورودی به اضافه یک عدد ثابت (بایاس) انجام می‌دهد.
+A linear model makes predictions by computing a weighted sum of the input features, plus a constant term called the bias term (or intercept).
 
-### 📐 فرمول پیش‌بینی (معادله ۴-۱ و ۴-۲)
-* **شکل بازشده:**
+### 📐 Prediction Formula (Equations 4-1 & 4-2)
+* **Expanded Form:**
   $$\hat{y} = \theta_0 + \theta_1 x_1 + \theta_2 x_2 + \dots + \theta_n x_n$$
 
-* **شکل برداری و فشرده (Vectorized Form):**
+* **Vectorized Form:**
   $$\hat{y} = h_\theta(\mathbf{x}) = \boldsymbol{\theta}^T \mathbf{x}$$
 
-### 🎯 تابع هزینه (Cost Function - MSE)
-برای آموزش مدل، مقادیر بردار $\boldsymbol{\theta}$ به‌گونه‌ای تنظیم می‌شوند که میانگین مربعات خطا (MSE) به حداقل برسد:
+### 🎯 Cost Function (MSE)
+To train the model, the parameter vector $\boldsymbol{\theta}$ is tuned to minimize the Mean Squared Error (MSE) over the training set:
 $$\text{MSE}(\boldsymbol{\theta}) = \frac{1}{m} \sum_{i=1}^{m} \left( \boldsymbol{\theta}^T \mathbf{x}^{(i)} - y^{(i)} \right)^2$$
 
 ---
 
-## ۲. روش‌های حل مستقیم (Closed-Form Solutions)
+## 2. Closed-Form Solutions
 
-### 🔹 معادلات نرمال (Normal Equation)
-فرمول ریاضی مستقیم برای یافتن بهینه‌ترین مقادیر $\boldsymbol{\theta}$:
+### 🔹 Normal Equation
+A direct mathematical approach to find the optimal values of $\boldsymbol{\theta}$:
 $$\hat{\boldsymbol{\theta}} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{y}$$
 
-### 🔹 شبه‌معکوس و SVD (روش Scikit-Learn)
-کلاس `LinearRegression` در Scikit-Learn از تجزیه مقادیر منفرد (SVD) و شبه‌معکوس مـور-پنروز ($\mathbf{X}^+$) استفاده می‌کند:
+### 🔹 Pseudoinverse and SVD (Scikit-Learn Approach)
+Scikit-Learn’s `LinearRegression` class uses Singular Value Decomposition (SVD) to compute the Moore-Penrose pseudoinverse ($\mathbf{X}^+$):
 $$\hat{\boldsymbol{\theta}} = \mathbf{X}^+ \mathbf{y}$$
-* **مزیت اصلی:** اگر ماتریس $\mathbf{X}^T \mathbf{X}$ معکوس‌پذیر نباشد (مثلاً $m < n$ یا وجود ویژگی‌های همبسته)، روش SVD بدون ارور جواب بهینه را پیدا می‌کند.
+* **Key Advantage:** If the matrix $\mathbf{X}^T \mathbf{X}$ is not invertible (e.g., when $m < n$ or when features are redundant), the SVD method safely computes the optimal solution without raising errors.
 
 ---
 
-## ۳. پیچیدگی محاسباتی (Computational Complexity)
+## 3. Computational Complexity
 
-| روش / الگوریتم | پیچیدگی زمانی نسبت به ویژگی‌ها ($n$) | پیچیدگی زمانی نسبت به داده‌ها ($m$) | محدودیت حافظه (RAM) |
+| Method / Algorithm | Time Complexity wrt Features ($n$) | Time Complexity wrt Instances ($m$) | Memory Requirement (RAM) |
 | :--- | :--- | :--- | :--- |
-| **Normal Equation** | $O(n^{2.4})$ تا $O(n^3)$ | $O(m)$ (خطی) | نیاز به بارگذاری کل داده در RAM |
-| **SVD (Scikit-Learn)** | $O(n^2)$ | $O(m)$ (خطی) | نیاز به بارگذاری کل داده در RAM |
+| **Normal Equation** | $O(n^{2.4})$ to $O(n^3)$ | $O(m)$ (Linear) | Requires full dataset in RAM |
+| **SVD (Scikit-Learn)** | $O(n^2)$ | $O(m)$ (Linear) | Requires full dataset in RAM |
 
-### 📌 نکات کلیدی:
-* **تعداد ویژگی‌ها ($n$):** روش‌های مستقیم با افزایش تعداد ویژگی‌ها (مثلاً $n > 100,000$) بسیار کند می‌شوند.
-* **تعداد داده‌ها ($m$):** زمان آموزش نسبت به تعداد نمونه‌ها خطی است، اما محدودیت اصلی گنجایش حافظه RAM است.
-* **زمان پیش‌بینی:** پس از آموزش، زمان پیش‌بینی نسبت به $m$ و $n$ کاملاً خطی $O(m \times n)$ و فوق‌العاده سریع است.
-* **علت کوچ به Gradient Descent:** عدم کارایی روش‌های مستقیم در مواجهه با ابعاد بسیار بزرگ ($n$ زیاد) یا داده‌های سنگین‌تر از ظرفیت RAM.
+### 📌 Key Takeaways:
+* **Number of Features ($n$):** Closed-form methods become extremely slow as the number of features grows large (e.g., $n > 100,000$).
+* **Number of Instances ($m$):** Training time grows linearly with the number of instances, but the main limitation is RAM capacity.
+* **Prediction Speed:** Once trained, making predictions is extremely fast and scales linearly $O(m \times n)$ with both instances and features.
+* **Why Move to Gradient Descent?** Direct methods fail or become impractically slow when dealing with high-dimensional feature spaces ($n$ is very large) or datasets that exceed system RAM.
