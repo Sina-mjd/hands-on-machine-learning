@@ -1,6 +1,6 @@
 # Chapter 4: Training Models 🚀
 
-This folder contains notes, mathematical foundations, and code implementations of training linear models from **Chapter 4 of Hands-On Machine Learning**.
+This folder contains notes, mathematical foundations, and code implementations of training linear and non-linear models from **Chapter 4 of Hands-On Machine Learning**.
 
 ---
 
@@ -30,19 +30,41 @@ $$\hat{\boldsymbol{\theta}} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathb
 ### 🔹 Pseudoinverse and SVD (Scikit-Learn Approach)
 Scikit-Learn’s `LinearRegression` class uses Singular Value Decomposition (SVD) to compute the Moore-Penrose pseudoinverse ($\mathbf{X}^+$):
 $$\hat{\boldsymbol{\theta}} = \mathbf{X}^+ \mathbf{y}$$
-* **Key Advantage:** If the matrix $\mathbf{X}^T \mathbf{X}$ is not invertible (e.g., when $m < n$ or when features are redundant), the SVD method safely computes the optimal solution without raising errors.
+* **Key Advantage:** Handles non-invertible matrices safely (e.g., when $m < n$ or when features are redundant).
 
 ---
 
-## 3. Computational Complexity
+## 3. Gradient Descent Algorithms
 
-| Method / Algorithm | Time Complexity wrt Features ($n$) | Time Complexity wrt Instances ($m$) | Memory Requirement (RAM) |
-| :--- | :--- | :--- | :--- |
-| **Normal Equation** | $O(n^{2.4})$ to $O(n^3)$ | $O(m)$ (Linear) | Requires full dataset in RAM |
-| **SVD (Scikit-Learn)** | $O(n^2)$ | $O(m)$ (Linear) | Requires full dataset in RAM |
+Optimization algorithms that iteratively tweak parameters to minimize the cost function:
+$$\boldsymbol{\theta}^{(\text{next step})} = \boldsymbol{\theta} - \eta \nabla_{\boldsymbol{\theta}} \text{MSE}(\boldsymbol{\theta})$$
+
+* **Batch Gradient Descent (BGD):** Computes the gradient over the full training set at every step using $\nabla_{\boldsymbol{\theta}} \text{MSE}(\boldsymbol{\theta}) = \frac{2}{m} \mathbf{X}^T (\mathbf{X}\boldsymbol{\theta} - \mathbf{y})$. High-precision, but slow on large datasets.
+* **Stochastic Gradient Descent (SGD):** Picks a random instance at each step to compute the gradient. Extremely fast, supports Out-of-core learning, escapes local minima, but oscillates around the minimum.
+* **Mini-batch Gradient Descent:** Computes gradients on small random subsets of instances. Leverages GPU matrix operations and provides smoother convergence than SGD.
+
+---
+
+## 4. Polynomial Regression
+
+Used to fit non-linear data using linear models by adding powers of each feature as new features via `PolynomialFeatures`.
+
+* **Feature Combinations:** Automatically includes interaction terms between features (e.g., $a^2, b^2, ab$).
+* **Combinatorial Explosion:** Be cautious with high degrees ($d$) or many features ($n$), as total features explode to:
+  $$\frac{(n + d)!}{d! \, n!}$$
+
+---
+
+## 5. Comparison of Linear Regression Algorithms
+
+| Method / Algorithm | Large $m$ (Instances) | Out-of-core Support | Large $n$ (Features) | Hyperparameters | Scaling Required | Scikit-Learn Class |
+| :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| **Normal Equation** | Fast | ❌ No | Slow | 0 | ❌ No | N/A |
+| **SVD** | Fast | ❌ No | Slow | 0 | ❌ No | `LinearRegression` |
+| **Batch GD** | Slow | ❌ No | Fast | 2 ($\eta$, iterations) | ✅ Yes | `SGDRegressor` / Custom |
+| **Stochastic GD** | Fast | ✅ Yes | Fast | $\ge 2$ ($\eta$, schedule) | ✅ Yes | `SGDRegressor` |
+| **Mini-batch GD** | Fast | ✅ Yes | Fast | $\ge 2$ (batch size, $\eta$) | ✅ Yes | `SGDRegressor` / Custom |
 
 ### 📌 Key Takeaways:
-* **Number of Features ($n$):** Closed-form methods become extremely slow as the number of features grows large (e.g., $n > 100,000$).
-* **Number of Instances ($m$):** Training time grows linearly with the number of instances, but the main limitation is RAM capacity.
-* **Prediction Speed:** Once trained, making predictions is extremely fast and scales linearly $O(m \times n)$ with both instances and features.
-* **Why Move to Gradient Descent?** Direct methods fail or become impractically slow when dealing with high-dimensional feature spaces ($n$ is very large) or datasets that exceed system RAM.
+* **Feature Scaling:** All Gradient Descent variants strictly require feature scaling (e.g., via `StandardScaler`) for fast convergence.
+* **Prediction Uniformity:** Once trained, all methods produce identical models with equal prediction speed $O(m \times n)$.
