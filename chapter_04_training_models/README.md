@@ -45,26 +45,78 @@ $$\boldsymbol{\theta}^{(\text{next step})} = \boldsymbol{\theta} - \eta \nabla_{
 
 ---
 
-## 4. Polynomial Regression
+## 4. Polynomial Regression & Learning Curves
 
 Used to fit non-linear data using linear models by adding powers of each feature as new features via `PolynomialFeatures`.
 
-* **Feature Combinations:** Automatically includes interaction terms between features (e.g., $a^2, b^2, ab$).
 * **Combinatorial Explosion:** Be cautious with high degrees ($d$) or many features ($n$), as total features explode to:
   $$\frac{(n + d)!}{d! \, n!}$$
 
+### 📈 Learning Curves & The Bias/Variance Tradeoff
+Plots of model performance on training vs. validation sets as a function of training set size:
+* **Underfitting (High Bias):** Both training and validation errors are high and reach a plateau close together. Adding more training data does not help.
+* **Overfitting (High Variance):** Large gap between training error (low) and validation error (high). Can be fixed by gathering more data or regularizing the model.
+
 ---
 
-## 5. Comparison of Linear Regression Algorithms
+## 5. Regularized Linear Models
 
-| Method / Algorithm | Large $m$ (Instances) | Out-of-core Support | Large $n$ (Features) | Hyperparameters | Scaling Required | Scikit-Learn Class |
-| :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Normal Equation** | Fast | ❌ No | Slow | 0 | ❌ No | N/A |
-| **SVD** | Fast | ❌ No | Slow | 0 | ❌ No | `LinearRegression` |
-| **Batch GD** | Slow | ❌ No | Fast | 2 ($\eta$, iterations) | ✅ Yes | `SGDRegressor` / Custom |
-| **Stochastic GD** | Fast | ✅ Yes | Fast | $\ge 2$ ($\eta$, schedule) | ✅ Yes | `SGDRegressor` |
-| **Mini-batch GD** | Fast | ✅ Yes | Fast | $\ge 2$ (batch size, $\eta$) | ✅ Yes | `SGDRegressor` / Custom |
+Regularization constrains model weights to reduce overfitting.
+
+### 🔹 Ridge Regression ($L_2$ Penalty)
+Adds a squared magnitude penalty to the cost function:
+$$J(\boldsymbol{\theta}) = \text{MSE}(\boldsymbol{\theta}) + \frac{\alpha}{2} \sum_{i=1}^{n} \theta_i^2$$
+* Forces weights to stay as small as possible without driving them completely to zero.
+
+### 🔹 Lasso Regression ($L_1$ Penalty)
+Adds an absolute magnitude penalty to the cost function:
+$$J(\boldsymbol{\theta}) = \text{MSE}(\boldsymbol{\theta}) + \alpha \sum_{i=1}^{n} |\theta_i|$$
+* Tends to eliminate weights of least important features ($\theta_i \to 0$), performing automatic feature selection.
+
+### 🔹 Elastic Net
+Combines both $L_1$ and $L_2$ penalties with a mix ratio $r$ (`l1_ratio`):
+$$J(\boldsymbol{\theta}) = \text{MSE}(\boldsymbol{\theta}) + r \alpha \sum_{i=1}^{n} |\theta_i| + \frac{1 - r}{2} \alpha \sum_{i=1}^{n} \theta_i^2$$
+* Preferred over pure Lasso when $p > n$ (more features than instances) or when features are strongly correlated.
+
+### 🔹 Early Stopping
+A regularization technique for iterative algorithms (GD) where training is stopped as soon as validation error reaches a minimum.
+
+---
+
+## 6. Logistic Regression & Softmax Regression
+
+### 🔹 Logistic Regression (Binary Classification)
+Estimates the probability $p = h_{\boldsymbol{\theta}}(\mathbf{x})$ that an instance belongs to a class using the Sigmoid function $\sigma(t) = \frac{1}{1 + e^{-t}}$:
+$$\hat{p} = \sigma(\boldsymbol{\theta}^T \mathbf{x})$$
+
+* **Log Loss Cost Function:**
+  $$J(\boldsymbol{\theta}) = -\frac{1}{m} \sum_{i=1}^{m} \left[ y^{(i)} \log(\hat{p}^{(i)}) + (1 - y^{(i)}) \log(1 - \hat{p}^{(i)}) \right]$$
+
+### 🔹 Softmax Regression (Multiclass Classification)
+Generalizes Logistic Regression to handle multiple classes without needing multiple binary classifiers.
+
+1. **Score Calculation for Class $k$:** $s_k(\mathbf{x}) = \boldsymbol{\theta}_k^T \mathbf{x}$
+2. **Softmax Function:**
+   $$\hat{p}_k = \sigma(\mathbf{s}(\mathbf{x}))_k = \frac{\exp(s_k(\mathbf{x}))}{\sum_{j=1}^{K} \exp(s_j(\mathbf{x}))}$$
+3. **Cross Entropy Cost Function:**
+   $$J(\mathbf{\Theta}) = -\frac{1}{m} \sum_{i=1}^{m} \sum_{k=1}^{K} y_k^{(i)} \log\left(\hat{p}_k^{(i)}\right)$$
+
+---
+
+## 7. Comparison of Model Selection Strategy
+
+| Model / Algorithm | Primary Use Case | Regularization Type | Feature Selection? | Handles Multicollinearity? | Scikit-Learn Class |
+| :--- | :--- | :--- | :---: | :---: | :--- |
+| **Linear Regression** | Baseline continuous prediction | None | ❌ No | ❌ Poor | `LinearRegression` |
+| **Ridge Regression** | Default for continuous prediction | $L_2$ Penalty | ❌ No | ✅ Good | `Ridge` / `SGDRegressor` |
+| **Lasso Regression** | Sparse feature sets | $L_1$ Penalty | ✅ Yes | ❌ Unstable | `Lasso` / `SGDRegressor` |
+| **Elastic Net** | $p > n$ or correlated features | Combined $L_1 + L_2$ | ✅ Yes | ✅ Good | `ElasticNet` |
+| **Logistic Regression**| Binary classification | $L_1$ / $L_2$ / ElasticNet | Optional | Dependent on Penalty | `LogisticRegression` |
+| **Softmax Regression** | Multiclass classification | $L_1$ / $L_2$ / ElasticNet | Optional | Dependent on Penalty | `LogisticRegression(multi_class="multinomial")` |
+
+---
 
 ### 📌 Key Takeaways:
-* **Feature Scaling:** All Gradient Descent variants strictly require feature scaling (e.g., via `StandardScaler`) for fast convergence.
-* **Prediction Uniformity:** Once trained, all methods produce identical models with equal prediction speed $O(m \times n)$.
+* **Feature Scaling:** Strictly required for all Gradient Descent implementations, Lasso, Ridge, and Logistic Regression with regularization.
+* **Regularization Choice:** Avoid plain Linear Regression. Default to Ridge, but use Elastic Net if you suspect correlated features or high dimensionality.
+* **Multiclass Strategy:** Prefer Softmax Regression over One-versus-Rest (OvR) for mutually exclusive classes.
