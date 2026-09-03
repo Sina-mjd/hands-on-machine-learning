@@ -1,6 +1,6 @@
 # Chapter 5: Support Vector Machines (SVM) 🚀
 
-This repository contains my implementations and notes for **Chapter 5** of *Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow*. It explores the mathematical logic and practical applications of Support Vector Machines for classification tasks.
+This repository contains my implementations and notes for **Chapter 5** of *Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow*. It explores the mathematical logic, optimization techniques, and practical applications of Support Vector Machines for both classification and regression tasks.
 
 ## 📌 Core Concepts Explored
 
@@ -10,13 +10,26 @@ This repository contains my implementations and notes for **Chapter 5** of *Hand
 *   **Nonlinear Classification:** Handling complex datasets (like the Moons dataset) by projecting data into higher dimensions.
 *   **The Kernel Trick:** Implementing Polynomial and Gaussian RBF kernels to achieve high-dimensional mapping without the massive computational cost of adding actual features.
 
+## 📈 SVM Regression (SVR)
+
+Unlike classification where the goal is to keep instances *outside* the margin, SVM Regression reverses the objective: it tries to fit as many instances as possible **inside** the street while limiting margin violations.
+*   **$\epsilon$-insensitive:** Adding more training instances within the margin does not affect the model's predictions. The width of this margin is controlled by the hyperparameter `epsilon` ($\epsilon$).
+*   **Classes Used:** `LinearSVR` for fast linear tasks and `SVR` for nonlinear tasks (supports the kernel trick).
+
+## 🧮 Under the Hood: Math & Optimization
+
+*   **Primal vs. Dual Problem:** SVM training is a Convex Quadratic Programming (QP) problem. While the Primal problem is faster for datasets with many features, converting it to the **Dual problem** is what makes the Kernel Trick mathematically possible.
+*   **The Kernel Trick & Mercer's Theorem:** A mathematical shortcut that computes the dot product of vectors in a high-dimensional (or even infinite-dimensional) space directly from the original features, bypassing actual transformations.
+*   **Online Learning & Hinge Loss:** For out-of-core learning, `SGDClassifier` uses Gradient Descent to minimize the **Hinge Loss** function `max(0, 1 - t)`. While highly scalable, it converges slower than traditional QP solvers.
+
 ## 🎛️ Hyperparameter Tuning Cheat Sheet
 
 Through experimentation, I analyzed the behavior of key SVM parameters:
 
 | Hyperparameter | Behavior when Increased | Regularization Effect |
 | :--- | :--- | :--- |
-| **`C`** | Narrower margin, fewer violations | Less Regularization (High Variance) |
+| **`C` (Classification)** | Narrower margin, fewer violations | Less Regularization (High Variance) |
+| **`C` (Regression)** | Adapts more closely to training data | Less Regularization (High Variance) |
 | **`gamma` ($\gamma$)** | Narrower RBF bell curve, highly irregular decision boundary | Less Regularization (High Variance) |
 
 > **Rule of Thumb:** If the model is overfitting, decrease `C` and/or `gamma`. If it's underfitting, increase them.
