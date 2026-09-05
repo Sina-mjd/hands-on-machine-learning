@@ -25,3 +25,10 @@ To evaluate the quality of a split, the algorithm measures the **Gini Impurity**
 | **Training** | $O(n \times m \log_2(m))$ | Slower; the algorithm compares all features across all instances at each node. |
 
 *(Note: $m$ = number of instances, $n$ = number of features)*
+
+## ⚠️ Limitations & Instability
+1. **Orthogonal Boundaries:** Decision Trees split data strictly perpendicular to the axes. They struggle with rotated or diagonal datasets, often creating convoluted "staircase" boundaries. (Mitigation: Use PCA to rotate data first).
+2. **High Variance:** Trees are extremely sensitive to minute variations in the training data. Removing or adding a single instance can radically alter the entire tree structure.
+3. **Stochastic Nature:** Scikit-Learn evaluates a random subset of features at each split. Always set `random_state` for reproducible results.
+
+*Ultimate Solution:* **Random Forests (Chapter 7)** solve this inherent instability by training many trees and averaging their predictions.
