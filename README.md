@@ -25,22 +25,20 @@ Below is an overview of the modules covered in this repository:
 | **03** | **Classification** | MNIST, Precision/Recall Tradeoff, ROC-AUC, Multiclass | 🟢 Completed |
 | **04** | **Training Models** | Normal Equation, SVD, BGD, SGD, Mini-batch, Polynomial Reg. | 🟢 Completed |
 | **05** | **Support Vector Machines** | Linear/Non-linear SVM, Soft Margin, Kernel Trick (RBF) | 🟢 Completed |
-| **06** | **Decision Trees** | CART Algorithm, Gini Impurity, Entropy, Regularization | ⏳ Upcoming |
+| **06** | **Decision Trees** | CART Algorithm, Gini/Entropy, Regularization, Regression Trees | 🟢 Completed |
 | **07** | **Ensemble Learning & Random Forests** | Bagging, Boosting (AdaBoost, XGBoost), Stacking | ⏳ Upcoming |
 | **08** | **Dimensionality Reduction** | PCA, Kernel PCA, t-SNE, Manifold Learning | ⏳ Upcoming |
 
 ---
 
-## 🔬 Chapter 5 Spotlight: Support Vector Machines (SVM)
+## 🔬 Latest Spotlight: Chapter 6 - Decision Trees
 
-A deep dive into building robust classifiers using margin maximization and kernel methods:
+A deep dive into building interpretable models for classification and regression tasks:
 
-* **Large Margin Classification:** Separating classes with the widest possible "street" to improve model generalization on unseen data.
-* **Soft Margin Flexibility:** Tuning the `C` hyperparameter to balance strict margin width against margin violations (Regularization).
-* **The Kernel Trick:** 
-  * Bypassing the combinatorial explosion of features by using mathematical shortcuts.
-  * Comparing **Polynomial Kernels** (global decision boundaries) vs. **Gaussian RBF Kernels** (local similarity landmarks).
-* **Computational Complexity:** Designing pipelines based on hardware and dataset constraints (e.g., using `SGDClassifier` for out-of-core learning vs. `SVC` for complex, medium-sized data).
+* **White-Box Interpretability:** Visualizing decision rules step-by-step without requiring feature scaling or centering.
+* **The CART Algorithm:** Understanding how Scikit-Learn builds binary trees using a greedy approach to minimize Gini Impurity and Mean Squared Error.
+* **Regularization Strategies:** Preventing severe overfitting by constraining degrees of freedom using hyperparameters like `max_depth` and `min_samples_leaf`.
+* **Addressing Instability:** Handling the model's sensitivity to rotation and high variance by utilizing PCA pipelines and preparing for Ensemble combinations.
 
 ---
 
@@ -52,7 +50,7 @@ A deep dive into building robust classifiers using margin maximization and kerne
 * **Deep Learning Frameworks:** `TensorFlow`, `Keras`, `PyTorch`
 * **Computer Vision:** `OpenCV`
 * **Visualization:** `Matplotlib`, `Seaborn`
-* **Environment & Tools:** Jupyter Notebooks, Docker, SQL, VS Code
+* **Environment & Databases:** Jupyter Notebooks, Docker, SQL, MongoDB, VS Code
 
 ---
 
