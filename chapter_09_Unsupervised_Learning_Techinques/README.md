@@ -48,3 +48,27 @@ This section focuses on practical, real-world applications of the K-Means algori
 * `image_segmentation.py`: Image pixel flattening, color clustering, and image reconstruction.
 * `preprocessing_pipeline.py`: K-Means integration with `StandardScaler`, `LogisticRegression`, and hyperparameter tuning via `GridSearchCV`.
 * `semi_supervised.py`: Representative instance extraction, label propagation algorithms, and partial propagation filtering.
+
+## Advanced Clustering: Density and Probabilistic Models
+
+This section explores advanced clustering algorithms designed to overcome the limitations of K-Means, particularly its assumption of spherical clusters and uniform cluster sizes.
+
+### Core Algorithms Explored
+
+* **DBSCAN (Density-Based Spatial Clustering of Applications with Noise):**
+  * **Mechanism:** Identifies clusters as continuous regions of high density, defined by a neighborhood radius (`eps`) and a minimum number of points (`min_samples`).
+  * **Strengths:** Capable of finding clusters of arbitrary shapes (e.g., the Moons dataset) and highly robust to outliers/noise (labeled as `-1`).
+  * **Implementation Note:** DBSCAN lacks a `predict()` method. Implemented a workaround by training a `KNeighborsClassifier` solely on the identified core instances to predict cluster assignments for new data points.
+  * **Limitations:** Struggles with datasets containing clusters of varying densities.
+
+* **Gaussian Mixture Models (GMM):**
+  * **Mechanism:** A probabilistic, generative model that assumes data is generated from a mixture of several Gaussian distributions.
+  * **Expectation-Maximization (EM):** Uses the EM algorithm for soft clustering, estimating the probability (responsibilities) of each instance belonging to each cluster, and iteratively updating cluster parameters (mean, covariance, weight).
+  * **Flexibility:** Unlike K-Means, GMMs can model ellipsoidal clusters of different sizes, densities, and orientations.
+  * **Generative Capabilities:** Demonstrated the ability to sample entirely new, synthetic instances (`sample()`) from the learned distributions.
+  * **Density Estimation:** Utilized `score_samples()` to estimate the Probability Density Function (PDF) at any given location.
+  * **Complexity Control:** Explored how restricting the `covariance_type` (e.g., "spherical", "diag", "tied") can reduce computational complexity and prevent the model from overfitting or struggling to converge on high-dimensional data.
+
+### Project Files
+* `dbscan_clustering.py`: Implementation of DBSCAN on non-spherical data and integration with KNN for predicting new instances.
+* `gaussian_mixtures.py`: EM algorithm implementation, soft clustering predictions, generative sampling, and covariance type constraints.
